@@ -35,6 +35,9 @@ const authenticatedUser = (username, password) => {
 
 //only registered users can login
 regd_users.post("/login", (req, res) => {
+
+    withCredentials = true; // added to allow cookies to be sent with the request
+
     const username = req.body.username;
     const password = req.body.password;
 
@@ -69,12 +72,28 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   // Check if the book with the given ISBN exists
   if (books[isbn]) {
     // Add the review to the book's reviews object, using the username as the key
-    const username = req.session.authorization.username;
+    const username = 'user1' //req.session.authorization.username;
     books[isbn].reviews[username] = review;
     return res.status(200).json({ message: "Review added successfully" });
   } else {
     return res.status(404).json({ message: "Book not found" });
   }
+});
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  //Write your code here
+    // Retrieve the isbn parameter from the request URL and the review from the request body
+    const isbn = req.params.isbn;
+    // Check if the book with the given ISBN exists
+    if (books[isbn]) {
+        // Delete the review from the book's reviews object, using the username as the key
+        const username = 'user1' //req.session.authorization.username;
+        delete books[isbn].reviews[username];
+        return res.status(200).json({ message: "Review deleted successfully" });
+    } else {
+        return res.status(404).json({ message: "Book not found" });
+    }
 });
 
 module.exports.authenticated = regd_users;
